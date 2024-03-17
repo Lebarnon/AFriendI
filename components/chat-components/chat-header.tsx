@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Edit, MessagesSquare, MoreVertical } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { BotAvatar } from "@/components/bot-avatar";
+import { ChatAvatar } from "@/components/chat-components/chat-avatar";
 import { useUser } from "@clerk/nextjs";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useToast } from "./ui/use-toast";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 
 interface ChatHeaderProps {
@@ -52,7 +52,7 @@ export const ChatHeader = ({companion}: ChatHeaderProps) => {
                     variant="ghost">
                         <ChevronLeft className="h-8 w-8" />
                 </Button>
-                <BotAvatar src={companion.src} />
+                <ChatAvatar src={companion.src} />
                 <div className="flex flex-col gap-y-1">
                     <div className="flex items-center gap-x-2">
                         <p className="font-bold">

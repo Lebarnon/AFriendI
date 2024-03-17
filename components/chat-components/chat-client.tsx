@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useCompletion } from "ai/react";
 
-import { ChatHeader } from "@/components/chat-header";
-import { ChatForm } from "@/components/chat-form";
-import { ChatMessages } from "@/components/chat-messages";
-import { ChatMessageProps } from "@/components/chat-message";
+import { ChatHeader } from "@/components/chat-components/chat-header";
+import { ChatForm } from "@/components/chat-components/chat-form";
+import { ChatMessages } from "@/components/chat-components/chat-messages";
+import { ChatMessageProps } from "@/components/chat-components/chat-message";
 
 interface ChatClientProps {
     companion: Companion & {

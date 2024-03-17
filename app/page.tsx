@@ -26,7 +26,7 @@ const RootPage = async ({searchParams}: RootPageProps) => {
             _count: {
                 select: {
                     messages: true
-                }
+                },
             }
         }
 
