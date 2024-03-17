@@ -45,13 +45,6 @@ const Companions = ({ data }: CompanionsProps) => {
                             <p className="text-bold">{companion.name}</p>
                             <p className="text-sm">{companion.description}</p>
                         </CardHeader>
-                        <CardFooter className="flex items-center justify-between">
-                            <p className="lowercase">@{companion.userName}</p>
-                            <div className="flex items-center">
-                                <MessagesSquare className="w-3 h-3 mr-1"/>
-                                {companion._count.messages}
-                            </div>
-                        </CardFooter>
                         </Link>
                     </Card>
                 ))}
