@@ -88,7 +88,7 @@ export const CompanionForm = ({companion, categories}: CompanionFormProps) => {
                 description: `Companion ${companion ? "updated" : "created"} successfully`
             });
             router.refresh();
-            router.push('/');
+            router.replace('/');
         }catch(error){
             toast({
                 variant: "destructive",
