@@ -47,7 +47,7 @@ export const ChatHeader = ({companion}: ChatHeaderProps) => {
         <div className="flex w-full justify-between items-center border-b border-primary/10 pb-4">
             <div className="flex gap-x-2 items-center">
                 <Button 
-                    onClick={() => router.back()}
+                    onClick={() => router.push("/")}
                     size="icon" 
                     variant="ghost">
                         <ChevronLeft className="h-8 w-8" />
@@ -63,7 +63,7 @@ export const ChatHeader = ({companion}: ChatHeaderProps) => {
                             {companion._count.messages}
                         </div>
                     </div>
-                    <p className="text-xs">TODO: Status</p>
+                    <p className="text-xs">{companion.description}</p>
                 </div>
             </div>
             {user?.id == companion.userId && (

@@ -1,11 +1,16 @@
 "use client";
 
+import Image from "next/image"
 import { cn } from "@/lib/utils";
-import { Home, Plus, Settings } from "lucide-react";
+import { Companion } from "@prisma/client";
+import { Home, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
+interface SidebarProps {
+    companions: Companion[];
+}
 
-export const Sidebar = () => {
+export const Sidebar = ({companions}: SidebarProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
@@ -21,17 +26,13 @@ export const Sidebar = () => {
             href: "/companion/new",
             label: "Create",
             protected: true,
-        },
-        {
-            icon: Settings,
-            href: "/settings",
-            label: "Settings",
-            protected: false,
         }
     ]
     const onNavigate = (url: string, protectedRoute: boolean) => {
-        // TODO: check if protected route
         return router.push(url);
+    }
+    const onCompanionClick = (companionId: string) => {
+        return router.push(`/chat/${companionId}`);
     }
 
     return ( 
@@ -50,6 +51,23 @@ export const Sidebar = () => {
                                 <route.icon className="h-5 w-5"/>
                                 {route.label}
                             </div>
+                        </div>
+                        ))}
+                    {companions?.map((companion) => (
+                        <div
+                        key={companion.id}
+                        onClick={() => onCompanionClick(companion.id)}
+                        className={cn(
+                            "flex p-1 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
+                            pathname.endsWith(companion.id) && "bg-primary/10 text-primary")}
+                        >
+                            <Image
+                                src={companion.src}
+                                alt={companion.name}
+                                width={150}
+                                height={150}
+                                className="rounded-lg"
+                            />
                         </div>
                         ))}
                 </div>

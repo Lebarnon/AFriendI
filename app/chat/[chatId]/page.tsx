@@ -1,6 +1,6 @@
 import prismadb from "@/lib/prismadb"
 import { auth, redirectToSignIn } from "@clerk/nextjs"
-import { redirect } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import ChatClient from "../../../components/chat-components/chat-client"
 
 interface ChatIdPageProps {
@@ -40,6 +40,41 @@ const ChatIdPage = async  ({ params }: ChatIdPageProps) => {
     if (!companion) {
         return redirect("/")
     }
+
+    await prismadb.friendList.upsert({
+        where: {
+            userId: userId
+        },
+        update: {
+            companions: {
+                connectOrCreate: {
+                    where: {
+                        id: params.chatId
+                    },
+                    create: {
+                        id: params.chatId,
+                        userId: userId,
+                        companionId: params.chatId
+                    }
+                }
+            }
+        },
+        create: {
+            userId: userId,
+            companions: {
+                connectOrCreate: {
+                    where: {
+                        id: params.chatId
+                    },
+                    create: {
+                        id: params.chatId,
+                        userId: userId,
+                        companionId: params.chatId
+                    }
+                }
+            }
+        }
+    })
 
     return (
         <ChatClient companion={companion} />

@@ -38,6 +38,7 @@ model Companion {
   categoryId    String
 
   messages      Message[]
+  friendLists   companionsOnFriendLists[]
 
   @@index([categoryId])
 }
@@ -60,4 +61,32 @@ model Message {
   companion     Companion @relation(fields: [companionId], references: [id], onDelete: Cascade)
 
   @@index([companionId])
+}
+
+model FriendList {
+  id            String    @default(uuid())
+  userId        String    @id @unique
+  companionIds  String[]
+  companions    companionsOnFriendLists[] 
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([companionIds])
+}
+
+model companionsOnFriendLists {
+  id            String    @id @default(uuid())
+  userId        String
+  companionId   String
+  companion     Companion @relation(fields: [companionId], references: [id])
+  friendListId  String
+  friendList    FriendList  @relation(fields: [friendListId], references: [userId])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([companionId])
+  @@index([friendListId])
+  @@index([userId])
 }
