@@ -11,12 +11,13 @@ interface RootPageProps {
     }
 }
 
-const RootPage = async ({searchParams}: RootPageProps) => {
+const RootPage = async ({ searchParams }: RootPageProps) => {
     const companions = await prismadb.companion.findMany({
         where: {
             categoryId: searchParams.categoryId,
             name: {
-                contains: searchParams.name
+                contains: searchParams.name,
+                mode: "insensitive"
             }
         },
         orderBy: {
@@ -33,13 +34,13 @@ const RootPage = async ({searchParams}: RootPageProps) => {
     })
 
     const categories = await prismadb.category.findMany();
-    return ( 
+    return (
         <div className="h-full p-4 space-y-2">
             <SearchInput />
             <Categories data={categories} />
             <Companions data={companions} />
-        </div> 
+        </div>
     );
 }
- 
+
 export default RootPage;
