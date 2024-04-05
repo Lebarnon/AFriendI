@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ClerkProvider, auth } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export default async function RootLayout({
         }
       }
     }
-  }) 
+  })
 
   return (
     <ClerkProvider>
@@ -43,14 +43,15 @@ export default async function RootLayout({
             <div className="h-full">
               <Navbar companions={friends} />
               <div className="hidden md:flex mt-16 w-20 flex-col fixed inset-y-0">
-                  <Sidebar companions={friends}/>
+                <Sidebar companions={friends} />
               </div>
               <main className="md:pl-20 pt-16 h-full">
-                  {children}
+                {children}
               </main>
             </div>
             <Toaster />
           </ThemeProvider>
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>
