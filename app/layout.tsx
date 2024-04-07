@@ -45,7 +45,7 @@ export default async function RootLayout({
               <div className="hidden md:flex mt-16 w-20 flex-col fixed inset-y-0">
                 <Sidebar companions={friends} />
               </div>
-              <main className="md:pl-20 pt-16 h-full">
+              <main className="md:px-20 pt-16 h-full max-w-[1600px] mx-auto">
                 {children}
               </main>
             </div>
