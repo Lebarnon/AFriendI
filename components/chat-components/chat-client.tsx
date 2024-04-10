@@ -19,12 +19,12 @@ interface ChatClientProps {
     }
 }
 
-const ChatClient = ({companion}: ChatClientProps) => {
+const ChatClient = ({ companion }: ChatClientProps) => {
     const [messages, setMessages] = useState<any[]>(companion.messages);
     const router = useRouter();
     useEffect(() => {
         router.refresh();
-    }, [])
+    }, [router])
     const { input, isLoading, handleInputChange, handleSubmit, setInput } = useCompletion({
         api: `/api/chat/${companion.id}`,
         onFinish(prompt, completion) {
@@ -50,24 +50,24 @@ const ChatClient = ({companion}: ChatClientProps) => {
         handleSubmit(e);
     }
 
-    return ( 
-    <div className="flex flex-col h-full p-4 space-y-2">
-        <ChatHeader companion={companion} />
-        <ChatMessages
-            messages={messages}
-            isLoading={isLoading}
-            companion={companion}
-        />
-        <ChatForm
-            isLoading={isLoading}
-            input={input}
-            handleInputChange={handleInputChange}
-            onSubmit={onSubmit}
+    return (
+        <div className="flex flex-col h-full p-4 space-y-2">
+            <ChatHeader companion={companion} />
+            <ChatMessages
+                messages={messages}
+                isLoading={isLoading}
+                companion={companion}
             />
-            
-    </div>
+            <ChatForm
+                isLoading={isLoading}
+                input={input}
+                handleInputChange={handleInputChange}
+                onSubmit={onSubmit}
+            />
+
+        </div>
     );
 }
- 
+
 
 export default ChatClient;

@@ -4,12 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { Companion } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { type CarouselApi } from "@/components/ui/carousel"
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
     Carousel,
     CarouselContent,
@@ -42,7 +41,7 @@ export const CompanionsCarousel = ({ data }: CompanionsCarouselProps) => {
 
     useEffect(() => {
         setLoading(true)
-        data = shuffleArray(data)
+        shuffleArray(data)
         setLoading(false)
     }, [data])
     if (loading) {

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/nav-components/mode-toggle";
 import { MobileSidebar } from "@/components/nav-components/mobile-sidebar";
 import { Companion } from "@prisma/client";
+import { SearchInput } from "@/components/search-input";
 
 const font = Poppins({
     weight: "600",
