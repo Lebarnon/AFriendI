@@ -1,22 +1,20 @@
 'use client'
 
+import React, { useEffect, useState } from 'react'
 import { Companion } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, MessagesSquare } from "lucide-react";
-import { Card, CardFooter, CardHeader, CardContent } from "@/components/ui/card";
-import React, { useEffect, useState } from 'react'
+import { Loader, MessageCircle } from "lucide-react";
+import { Card, CardHeader } from "@/components/ui/card";
 import { type CarouselApi } from "@/components/ui/carousel"
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
-import Companions from "./companions";
 import { shuffleArray } from "@/lib/shuffle";
 
 
@@ -25,9 +23,10 @@ interface CompanionsCarouselProps {
 }
 
 export const CompanionsCarousel = ({ data }: CompanionsCarouselProps) => {
-    const [api, setApi] = React.useState<CarouselApi>()
-    const [current, setCurrent] = React.useState(0)
-    const [count, setCount] = React.useState(0)
+    const [api, setApi] = useState<CarouselApi>()
+    const [current, setCurrent] = useState<Number>(0)
+    const [count, setCount] = useState<Number>(0)
+    const [loading, setLoading] = useState<boolean>(true)
     useEffect(() => {
         if (!api) {
             return
@@ -42,10 +41,19 @@ export const CompanionsCarousel = ({ data }: CompanionsCarouselProps) => {
     }, [api])
 
     useEffect(() => {
+        setLoading(true)
         data = shuffleArray(data)
+        setLoading(false)
     }, [data])
-
-    if (data.length === 0) {
+    if (loading) {
+        return (
+            <div className="animate-pulse pt-10">
+                <div className='h-[500px] w-full max-w-md bg-gray-400 bg-opacity-30 rounded-lg mx-auto' />
+                <div className='h-[30px] w-full max-w-md bg-gray-400 bg-opacity-30 rounded-lg mt-2 mx-auto' />
+                <div className='h-[30px] w-full max-w-md bg-gray-400 bg-opacity-30 rounded-lg mt-2 mx-auto' />
+            </div >
+        )
+    } else if (data.length === 0) {
         return (
             <div className="pt-10 flex flex-col items-center justify-center space-y-3">
                 <div className="relative w-60 h-60">
