@@ -10,7 +10,35 @@ bun i
 npm run i
 ```
 
-run the development server:
+Next, create accounts for the services utilised in this project.
+- Clerk
+- Vercel
+- Vercel's Postgres 
+- OpenAI API 
+- Upstash 
+- Pinecone
+
+Add the required keys to a .env file at the root of the project:
+
+```bash
+# .env
+PINECONE_INDEX=""
+POSTGRES_DATABASE=""
+POSTGRES_HOST=""
+POSTGRES_PASSWORD=""
+POSTGRES_PRISMA_URL=""
+POSTGRES_URL=""
+POSTGRES_URL_NON_POOLING=""
+POSTGRES_URL_NO_SSL=""
+POSTGRES_USER=""
+REPLICATE_API_TOKEN=""
+UPSTASH_REDIS_REST_TOKEN=""
+UPSTASH_REDIS_REST_URL=""
+VERCEL=""
+VERCEL_ENV=""
+```
+
+Finally run the development server:
 
 ```bash
 bun dev
