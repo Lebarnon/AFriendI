@@ -77,48 +77,35 @@ export async function POST(
             temperature: 0.9,
             openAIApiKey: process.env.OPENAI_API_KEY,
         });
-        // const model = new Replicate({
-        //     model:
-        //       "a16z-infra/llama-2-13b-chat:df7690f1994d94e96ad9d568eac121aecf50684a0b0963b25a41cc40061269e5",
-        //     input: {
-        //       max_length: 2048,
-        //     },
-        //     apiKey: process.env.REPLICATE_API_TOKEN,
-        //     callbackManager: CallbackManager.fromHandlers(handlers),
-        // });
+
 
         model.verbose = true;
 
         const rawResponse = String(
             await model
-                .invoke(
-                    `
-            ONLY generate plain sentences without prefix of who is speaking. DO NOT use ${companion.name}: prefix. 
-    
-            ${companion.instructions}
-    
-            Below are relevant details about ${companion.name}'s past and the conversation you are in.
-            ${relevantHistory}
-    
-    
-            ${recentChatHistory}\n${companion.name}:`
-                )
+                .invoke(`
+                Generate responses in natural language without indicating the speaker. You must adhere to the following guidelines:
+
+                ${companion.instructions}
+                
+                To provide context, here are pertinent details about ${companion.name}'s history and our ongoing conversation:
+                
+                ${relevantHistory}
+                
+                Additionally, here is a summary of recent exchanges:
+                
+                ${recentChatHistory}
+            `)
                 .catch(console.error)
         );
 
         const cleanedResponse = rawResponse
             .replaceAll(",", "")
-            .split("\n")[0]
-            .trim();
-
-        await memoryManager.writeToHistory("" + cleanedResponse, companionKey);
-        let Readable = require("stream").Readable;
-        let s = new Readable();
-        s.push(cleanedResponse);
-        s.push(null);
+            .replace(/^\n|\n$/g, '')
+            .trim()
 
         if (cleanedResponse !== undefined && cleanedResponse.length > 1) {
-            memoryManager.writeToHistory("" + cleanedResponse, companionKey);
+            await memoryManager.writeToHistory("" + cleanedResponse, companionKey);
 
             await prismadb.companion.update({
                 where: {
@@ -135,6 +122,11 @@ export async function POST(
                 }
             })
         }
+        let Readable = require("stream").Readable;
+        let s = new Readable();
+        s.push(cleanedResponse);
+        s.push(null);
+
         return new StreamingTextResponse(s);
     } catch (error) {
         console.error("CHAT POST", error);

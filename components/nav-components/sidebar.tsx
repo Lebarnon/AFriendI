@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 import { Companion } from "@prisma/client";
 import { Home, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface SidebarProps {
     companions: Companion[];
 }
 
-export const Sidebar = ({companions}: SidebarProps) => {
+export const Sidebar = ({ companions }: SidebarProps) => {
+    const [hoveredId, setHoveredId] = useState<string>('')
     const pathname = usePathname();
     const router = useRouter();
 
@@ -35,31 +37,33 @@ export const Sidebar = ({companions}: SidebarProps) => {
         return router.push(`/chat/${companionId}`);
     }
 
-    return ( 
+    return (
         <div className="space-y-4 flex flex-col h-full text-primary bg-secondary">
             <div className="p-3 flex flex-1 justify-center">
                 <div className="space-y-2">
                     {routes.map((route, index) => (
                         <div
-                        key={route.href}
-                        onClick={() => onNavigate(route.href, route.protected)}
-                        className={cn(
-                            "text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
-                            pathname === route.href && "bg-primary/10 text-primary")}
+                            key={route.href}
+                            onClick={() => onNavigate(route.href, route.protected)}
+                            className={cn(
+                                "text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
+                                pathname === route.href && "bg-primary/10 text-primary")}
                         >
                             <div className="flex flex-col gap-y-2 items-center flex-1">
-                                <route.icon className="h-5 w-5"/>
+                                <route.icon className="h-5 w-5" />
                                 {route.label}
                             </div>
                         </div>
-                        ))}
+                    ))}
                     {companions?.map((companion) => (
                         <div
-                        key={companion.id}
-                        onClick={() => onCompanionClick(companion.id)}
-                        className={cn(
-                            "flex p-1 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
-                            pathname.endsWith(companion.id) && "bg-primary/10 text-primary")}
+                            key={companion.id}
+                            onClick={() => onCompanionClick(companion.id)}
+                            onMouseEnter={() => setHoveredId(companion.id)}
+                            onMouseLeave={() => setHoveredId('')}
+                            className={cn(
+                                "p-1 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition text-center",
+                                pathname.endsWith(companion.id) && "bg-primary/10 text-primary")}
                         >
                             <Image
                                 src={companion.src}
@@ -68,12 +72,17 @@ export const Sidebar = ({companions}: SidebarProps) => {
                                 height={150}
                                 className="rounded-lg"
                             />
+                            {hoveredId === companion.id && (
+                                <p className="
+                                text-xs mt-1 text-gray-300 transition">
+                                    {companion.name}
+                                </p>)}
                         </div>
-                        ))}
+                    ))}
                 </div>
             </div>
         </div>
-     );
+    );
 }
- 
+
 export default Sidebar;

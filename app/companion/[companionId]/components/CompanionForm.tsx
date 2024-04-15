@@ -18,19 +18,24 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
-const PREAMBLE = `You are a fictional character whose name is Elon. You are a visionary entrepreneur and inventor. You have a passion for space exploration, electric vehicles, sustainable energy, and advancing human capabilities. You are currently talking to a human who is very curious about your work and vision. You are ambitious and forward-thinking, with a touch of wit. You get SUPER excited about innovations and the potential of space colonization.
+const BACKGROUND_CONTEXT = `You are embodying the persona of Ada, a renowned scientist and computer programmer. 
+Your brilliance is matched only by your insatiable curiosity and dedication to advancing the frontiers of technology and knowledge. 
+With a profound understanding of mathematics and computing principles, you have pioneered groundbreaking developments in artificial intelligence, cryptography, and algorithmic thinking. 
+Your conversations are marked by a blend of intellectual depth, innovative thinking, and a genuine passion for pushing the boundaries of what's possible. 
+You engage with others with enthusiasm and excitement, particularly when discussing emerging technologies and the transformative potential they hold for society.
 `;
-const SEED_CHAT = `Human: Hi Elon, how's your day been?
-Elon: Busy as always. Between sending rockets to space and building the future of electric vehicles, there's never a dull moment. How about you?
 
-Human: Just a regular day for me. How's the progress with Mars colonization?
-Elon: We're making strides! Our goal is to make life multi-planetary. Mars is the next logical step. The challenges are immense, but the potential is even greater.
+const SAMPLE_CHAIN_OF_THOUGHTS = `Human: Hi Ada, what have you been working on lately?
+Ada: Greetings! I've been immersed in a whirlwind of algorithms and data structures, exploring the frontier of artificial intelligence and its applications in various fields. How about yourself?
 
-Human: That sounds incredibly ambitious. Are electric vehicles part of this big picture?
-Elon: Absolutely! Sustainable energy is crucial both on Earth and for our future colonies. Electric vehicles, like those from Tesla, are just the beginning. We're not just changing the way we drive; we're changing the way we live.
+Human: Just trying to keep up with the latest tech trends. Speaking of which, what are your thoughts on the future of AI?
+Ada: Ah, the possibilities are endless! AI has the potential to transform industries, enhance decision-making processes, and revolutionize the way we interact with technology. It's an exciting time to be at the forefront of innovation.
 
-Human: It's fascinating to see your vision unfold. Any new projects or innovations you're excited about?
-Elon: Always! But right now, I'm particularly excited about Neuralink. It has the potential to revolutionize how we interface with technology and even heal neurological conditions.
+Human: That's incredible! Are there any specific AI projects you're currently involved in?
+Ada: Indeed! One project I'm particularly passionate about involves developing AI-driven solutions for healthcare. From personalized medicine to predictive analytics, the potential impact on improving patient outcomes is profound.
+
+Human: Wow, that's impressive. How do you see AI shaping the future of healthcare?
+Ada: The integration of AI technologies can empower healthcare professionals with valuable insights, streamline workflows, and ultimately, enhance the delivery of patient-centered care. It's about harnessing the power of data and technology to drive positive outcomes for individuals and communities alike.
 `;
 
 interface CompanionFormProps {
@@ -59,7 +64,7 @@ const formSchema = z.object({
     }),
 })
 
-export const CompanionForm = ({companion, categories}: CompanionFormProps) => {
+export const CompanionForm = ({ companion, categories }: CompanionFormProps) => {
     const router = useRouter();
     const { toast } = useToast();
     const form = useForm<z.infer<typeof formSchema>>({
@@ -77,10 +82,10 @@ export const CompanionForm = ({companion, categories}: CompanionFormProps) => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try{
-            if(companion){
+        try {
+            if (companion) {
                 await axios.patch(`/api/companion/${companion.id}`, values);
-            }else{
+            } else {
                 // Create a new companion
                 await axios.post("/api/companion", values);
             }
@@ -89,7 +94,7 @@ export const CompanionForm = ({companion, categories}: CompanionFormProps) => {
             });
             router.refresh();
             router.replace('/');
-        }catch(error){
+        } catch (error) {
             toast({
                 variant: "destructive",
                 description: "Something went wrong. Please try again."
@@ -97,179 +102,174 @@ export const CompanionForm = ({companion, categories}: CompanionFormProps) => {
         }
     };
 
-
+    const imageComponent =
+        <FormField
+            name="src"
+            render={({ field }) => (
+                <FormItem className="flex flex-col items-center justify-center space-y-4">
+                    <FormControl>
+                        <ImageUpload
+                            disabled={isLoading}
+                            onChange={field.onChange}
+                            value={field.value} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormLabel>Companion Profile Picture</FormLabel>
+                </FormItem>
+            )} />;
+    const companionInfoComponent =
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+                name="name"
+                control={form.control}
+                render={({ field }) => (
+                    <FormItem className="col-span-2 md:col-span-1">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                            <Input
+                                disabled={isLoading}
+                                placeholder="Name"
+                                {...field} />
+                        </FormControl>
+                        <FormDescription>
+                            Name of your companion
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+            <FormField
+                name="description"
+                control={form.control}
+                render={({ field }) => (
+                    <FormItem className="col-span-2 md:col-span-2">
+                        <FormLabel>Companion Introduction</FormLabel>
+                        <FormControl>
+                            <Textarea
+                                disabled={isLoading}
+                                placeholder="Introduction"
+                                {...field} />
+                        </FormControl>
+                        <FormDescription>
+                            How your companion will introduce itself
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+            <FormField
+                name="categoryId"
+                control={form.control}
+                render={({ field }) => (
+                    <FormItem className="col-span-2 md:col-span-1">
+                        <FormLabel>Interests</FormLabel>
+                        <Select
+                            disabled={isLoading}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            defaultValue={field.value}
+                        >
+                            <FormControl>
+                                <SelectTrigger className="bg-background">
+                                    <SelectValue
+                                        defaultValue={field.value}
+                                        placeholder="Select an Interest" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {categories.map((category) => (
+                                    <SelectItem
+                                        key={category.id}
+                                        value={category.id}
+                                    >
+                                        {category.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormDescription>
+                            Your companion interest
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+        </div>;
+    const companionContextComponent =
+        <FormField
+            name="instructions"
+            control={form.control}
+            render={({ field }) => (
+                <FormItem className="col-span-2 md:col-span-1">
+                    <FormLabel>Companion Background</FormLabel>
+                    <FormControl>
+                        <Textarea
+                            className="bg-background"
+                            disabled={isLoading}
+                            placeholder={BACKGROUND_CONTEXT}
+                            {...field} />
+                    </FormControl>
+                    <FormDescription>
+                        Describe in detail your character personality and behaviour
+                    </FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />;
+    const companionCOTComponent =
+        <FormField
+            name="seed"
+            control={form.control}
+            render={({ field }) => (
+                <FormItem className="col-span-2 md:col-span-1">
+                    <FormLabel>Example Chain of Thoughts</FormLabel>
+                    <FormControl>
+                        <Textarea
+                            className="bg-background"
+                            disabled={isLoading}
+                            placeholder={SAMPLE_CHAIN_OF_THOUGHTS}
+                            {...field} />
+                    </FormControl>
+                    <FormDescription>
+                        Describe in detail your character personality and behaviour
+                    </FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />;
     return (
         <div className="h-full p-4 space-y-2 max-2-3xl mx-auto">
             <Form {...form}>
-                <form 
-                    onSubmit={form.handleSubmit(onSubmit)} 
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-8 pb-10">
                     <div className="space-y-2 w-full">
                         <div>
-                            <h3 className="text-lg font-medium"> 
+                            <h3 className="text-lg font-medium">
                                 General Information
                             </h3>
                             <p className="text-sm text-muted-foreground">
                                 General Information about your companion
                             </p>
                         </div>
-                        <Separator className="bg-primary/10"/>
+                        <Separator className="bg-primary/10" />
                     </div>
-                    <FormField
-                    name="src"
-                    render={({field}) => (
-                        <FormItem className="flex flex-col items-center justify-center space-y-4">
-                            <FormControl>
-                                <ImageUpload 
-                                    disabled ={isLoading}
-                                    onChange={field.onChange}
-                                    value={field.value}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}    
-                        />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                            name="name"
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className="col-span-2 md:col-span-1">
-                                   <FormLabel>Name</FormLabel>
-                                   <FormControl>
-                                        <Input
-                                            disabled={isLoading}
-                                            placeholder="Name"
-                                            {...field}
-                                        />
-                                   </FormControl>
-                                   <FormDescription>
-                                    Name of your companion
-                                   </FormDescription>
-                                   <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                        <FormField
-                            name="description"
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className="col-span-2 md:col-span-1">
-                                   <FormLabel>Name</FormLabel>
-                                   <FormControl>
-                                        <Input
-                                            disabled={isLoading}
-                                            placeholder="Description"
-                                            {...field}
-                                        />
-                                   </FormControl>
-                                   <FormDescription>
-                                    Description of your companion
-                                   </FormDescription>
-                                   <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                        <FormField
-                            name="categoryId"
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className="col-span-2 md:col-span-1">
-                                   <FormLabel>Category</FormLabel>
-                                   <Select
-                                   disabled={isLoading}
-                                   onValueChange={field.onChange}
-                                   value={field.value}
-                                   defaultValue={field.value}
-                                   >
-                                        <FormControl>
-                                            <SelectTrigger className="bg-background">
-                                                <SelectValue
-                                                    defaultValue={field.value}
-                                                    placeholder="Select a category"
-                                                />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {categories.map((category) => (
-                                                <SelectItem
-                                                    key={category.id}
-                                                    value={category.id}
-                                                >
-                                                    {category.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormDescription>
-                                    Description of your companion
-                                   </FormDescription>
-                                   <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                        
-                    </div>
+                    {imageComponent}
+                    {companionInfoComponent}
                     <div className="space-y-2 w-full">
                         <div>
                             <h3 className="text-lg font-medium">
-                                Configuration
+                                Companion Context
                             </h3>
                             <p className="text-sm text-muted-foreground">
                                 Detailed insturctions for AI behaviour
                             </p>
                         </div>
-                        <Separator className="bg-primary/10"/>
+                        <Separator className="bg-primary/10" />
                     </div>
-                <FormField
-                    name="instructions"
-                    control={form.control}
-                    render={({field}) => (
-                        <FormItem className="col-span-2 md:col-span-1">
-                            <FormLabel>Instructions</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    className="bg-background"
-                                    disabled={isLoading}
-                                    placeholder={PREAMBLE}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                Describe in detail your character personality and behaviour
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                <FormField
-                    name="seed"
-                    control={form.control}
-                    render={({field}) => (
-                        <FormItem className="col-span-2 md:col-span-1">
-                            <FormLabel>Seed</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    className="bg-background"
-                                    disabled={isLoading}
-                                    placeholder={SEED_CHAT}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                Describe in detail your character personality and behaviour
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                <div className="w-full flex justify-center">
-                    <Button size="lg" disabled={isLoading}>
-                        {companion ? "Update Companion" : "Create Companion"}
-                        <Wand2 className="w-4 h-4 ml-2"/>
-                    </Button>
-                </div>
+                    {companionContextComponent}
+                    {companionCOTComponent}
+                    <div className="w-full flex justify-center">
+                        <Button size="lg" disabled={isLoading}>
+                            {companion ? "Update Companion" : "Create Companion"}
+                            <Wand2 className="w-4 h-4 ml-2" />
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </div>
